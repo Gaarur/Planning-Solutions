@@ -1,0 +1,126 @@
+{
+  "total_distance": 58088,
+  "total_time": 234,
+  "routes": [
+    {
+      "vehicle_id": 0,
+      "route": [
+        {
+          "node": "depot_north",
+          "lat": 28.7041,
+          "long": 77.1025,
+          "type": "starting_point"
+        },
+        {
+          "node": "store_005",
+          "lat": 28.6792,
+          "long": 77.2069,
+          "type": "store"
+        },
+        {
+          "node": "store_002",
+          "lat": 28.6219,
+          "long": 77.2419,
+          "type": "store"
+        },
+        {
+          "node": "store_003",
+          "lat": 28.5355,
+          "long": 77.2466,
+          "type": "store"
+        },
+        {
+          "node": "store_004",
+          "lat": 28.5244,
+          "long": 77.1855,
+          "type": "store"
+        },
+        {
+          "node": "store_001",
+          "lat": 28.6139,
+          "long": 77.209,
+          "type": "store"
+        },
+        {
+          "node": "depot_north",
+          "lat": 28.7041,
+          "long": 77.1025,
+          "type": "starting_point"
+        }
+      ],
+      "distance": 58088,
+      "time": 234,
+      "stores_visited": 5
+    },
+    {
+      "vehicle_id": 1,
+      "route": [
+        {
+          "node": "depot_south",
+          "lat": 28.5355,
+          "long": 77.391,
+          "type": "starting_point"
+        },
+        {
+          "node": "depot_south",
+          "lat": 28.5355,
+          "long": 77.391,
+          "type": "starting_point"
+        }
+      ],
+      "distance": 0,
+      "time": 0,
+      "stores_visited": 0
+    },
+    {
+      "vehicle_id": 2,
+      "route": [
+        {
+          "node": "depot_north",
+          "lat": 28.7041,
+          "long": 77.1025,
+          "type": "starting_point"
+        },
+        {
+          "node": "depot_north",
+          "lat": 28.7041,
+          "long": 77.1025,
+          "type": "starting_point"
+        }
+      ],
+      "distance": 0,
+      "time": 0,
+      "stores_visited": 0
+    },
+    {
+      "vehicle_id": 3,
+      "route": [
+        {
+          "node": "depot_south",
+          "lat": 28.5355,
+          "long": 77.391,
+          "type": "starting_point"
+        },
+        {
+          "node": "depot_south",
+          "lat": 28.5355,
+          "long": 77.391,
+          "type": "starting_point"
+        }
+      ],
+      "distance": 0,
+      "time": 0,
+      "stores_visited": 0
+    }
+  ],
+  "summary": {
+    "total_distance_km": 58.088,
+    "total_time_hours": 3.9,
+    "total_stores_covered": 5,
+    "avg_distance_per_salesperson": 14.522,
+    "avg_time_per_salesperson": 0.975,
+    "coverage_percentage": 100,
+    "uncovered_count": 0
+  },
+  "uncovered_stores": []
+}

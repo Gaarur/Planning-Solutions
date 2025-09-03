@@ -1,0 +1,8 @@
+node,lat,long,node_type
+depot_north,28.7041,77.1025,starting_point
+depot_south,28.5355,77.3910,starting_point
+store_001,28.6139,77.2090,store
+store_002,28.6219,77.2419,store
+store_003,28.5355,77.2466,store
+store_004,28.5244,77.1855,store
+store_005,28.6792,77.2069,store
