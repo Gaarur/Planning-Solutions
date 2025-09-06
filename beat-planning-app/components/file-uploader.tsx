@@ -8,7 +8,8 @@ import { useAppStore, type Route } from "@/store/use-app-store"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useRef } from "react"
 
-const OPTIMIZER_API = "http://localhost:8001/optimize_workers_advanced"
+const OPTIMIZER_API_BASIC = "http://localhost:8001/optimize_workers_basic"
+const OPTIMIZER_API_ADVANCED = "http://localhost:8001/optimize_workers_advanced"
 
 type CsvRow = {
   salesperson?: string
@@ -26,12 +27,22 @@ function colorFor(index: number) {
   return BLUE_SHADES[index % BLUE_SHADES.length]
 }
 
+const ADVANCED_ALGORITHMS = [
+  { value: "basic", label: "Basic" },
+  { value: "greedy", label: "Greedy" },
+  { value: "constraint_satisfaction", label: "Constraint Satisfaction" },
+  { value: "linear_programming", label: "Linear Programming" },
+  { value: "bin_packing", label: "Bin Packing" },
+]
+
 export function FileUploader() {
   const setRoutes = useAppStore((s) => s.setRoutes)
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [optimizerResult, setOptimizerResult] = useState<any>(null)
   const [routes, setLocalRoutes] = useState<Route[]>([])
+  const [approach, setApproach] = useState<'basic' | 'advanced'>('advanced')
+  const [algorithm, setAlgorithm] = useState<string>(ADVANCED_ALGORITHMS[0].value)
 
   const handleFile = (file: File) => {
     setLoading(true)
@@ -113,16 +124,24 @@ export function FileUploader() {
       working_days_per_week: 5,
       working_hours_per_day: 8,
     }
+    const apiUrl = approach === 'basic' ? OPTIMIZER_API_BASIC : OPTIMIZER_API_ADVANCED
+    const body: any = {
+      routes: routes.map(r => ({
+        salespersonId: r.salespersonId,
+        salespersonName: r.salespersonName,
+        stops: r.stops,
+        metrics: r.metrics
+      })),
+      constraints
+    }
+    if (approach === 'advanced') {
+      body.algorithm = algorithm
+    }
     try {
-      const response = await fetch(OPTIMIZER_API, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ routes: routes.map(r => ({
-          salespersonId: r.salespersonId,
-          salespersonName: r.salespersonName,
-          stops: r.stops,
-          metrics: r.metrics
-        })), constraints })
+        body: JSON.stringify(body)
       })
       const data = await response.json()
       setOptimizerResult(data)
@@ -155,15 +174,53 @@ export function FileUploader() {
             {loading ? "Uploading..." : "Upload Plan"}
           </Button>
         </div>
+        {/* Show approach/algorithm only after file upload (routes parsed) */}
+        {routes.length > 0 && (
+          <>
+            <div className="flex items-center gap-3">
+              <label htmlFor="approach-select">Approach:</label>
+              <select
+                id="approach-select"
+                value={approach}
+                onChange={e => setApproach(e.target.value as 'basic' | 'advanced')}
+                className="border rounded px-2 py-1"
+              >
+                <option value="basic">Basic</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            {approach === 'advanced' && (
+              <div className="flex items-center gap-3">
+                <label htmlFor="algorithm-select">Algorithm:</label>
+                <select
+                  id="algorithm-select"
+                  value={algorithm}
+                  onChange={e => setAlgorithm(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  {ADVANCED_ALGORITHMS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </>
+        )}
         {routes.length > 0 && (
           <Button disabled={loading} onClick={handleOptimize} className="bg-green-600 hover:bg-green-700 mt-2">
-            {loading ? "Optimizing..." : "Run Optimizer"}
+            {loading ? "Optimizing..." : `Run Optimizer (${approach.charAt(0).toUpperCase() + approach.slice(1)})`}
           </Button>
         )}
         {optimizerResult && (
           <div className="mt-4 p-3 rounded bg-gray-100 text-gray-800">
             <h4 className="font-bold mb-2">Optimizer Result</h4>
-            <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(optimizerResult, null, 2)}</pre>
+            {approach === 'advanced' && algorithm && optimizerResult[algorithm] ? (
+              <pre className="text-xs whitespace-pre-wrap">
+                {JSON.stringify(optimizerResult[algorithm], null, 2)}
+              </pre>
+            ) : (
+              <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(optimizerResult, null, 2)}</pre>
+            )}
           </div>
         )}
       </CardContent>
