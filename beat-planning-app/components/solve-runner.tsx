@@ -23,7 +23,7 @@ type AssignmentRow = {
 const BLUE_SHADES = ["#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa"]
 const colorFor = (i: number) => BLUE_SHADES[i % BLUE_SHADES.length]
 
-const API_DIRECT = "https://cute-beers-smoke.loca.lt/solve_beat_planning"
+const API_DIRECT = "http://127.0.0.1:8000/solve_beat_planning"
 const API_PROXY = "/api/solve"
 
 async function parseJsonSafely(res: Response) {

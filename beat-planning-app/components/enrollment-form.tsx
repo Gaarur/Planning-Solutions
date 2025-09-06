@@ -28,7 +28,6 @@ export function EnrollmentForm() {
       contact: contact.trim() || undefined,
       startLat: startLat ? Number.parseFloat(startLat) : undefined,
       startLng: startLng ? Number.parseFloat(startLng) : undefined,
-      // @ts-expect-error forwarded optional field supported in store
       startName: startName?.trim() || undefined,
     })
     toast({ title: "Salesperson enrolled", description: `Generated Sales ID: ${sp.id}` })

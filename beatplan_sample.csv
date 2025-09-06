@@ -1,0 +1,10 @@
+salesperson,salespersonId,lat,lng,label,stop_name,sequence
+John ASD,1,28.704,77.103,depot_north,depot_north,1
+John ASD,1,28.614,77.209,store_001,store_001,2
+John ASD,1,28.622,77.247,store_002,store_002,3
+John ASD,1,28.679,77.207,store_005,store_005,4
+John ASD,1,28.704,77.103,depot_north,depot_north,5
+Jane Smith,2,28.535,77.391,depot_south,depot_south,1
+Jane Smith,2,28.535,77.247,store_003,store_003,2
+Jane Smith,2,28.524,77.186,store_004,store_004,3
+Jane Smith,2,28.535,77.391,depot_south,depot_south,4
