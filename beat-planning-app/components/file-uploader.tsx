@@ -160,11 +160,12 @@ export function FileUploader() {
           Upload a CSV with columns: salesperson, salespersonId, lat, lng, label/stop_name, sequence.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="flex  flex-col gap-3">
         <div className="flex items-center gap-3">
           <input
             type="file"
             accept=".csv"
+            className="border rounded px-2 py-1"
             onChange={(e) => {
               const file = e.target.files?.[0]
               if (file) handleFile(file)

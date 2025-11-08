@@ -1,6 +1,7 @@
 "use client"
 
-import type React from "react"
+import React from "react"
+import ProfileCard from "./profile-card"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -11,10 +12,29 @@ const nav = [
   { href: "/solution-viewer", label: "Solution Viewer" },
   { href: "/enrollment", label: "Salesperson Enrollment" },
   { href: "/assignments", label: "Assignments & Reporting" },
+    { href: "/manager", label: "Manager" },
+    { href: "/sales", label: "Sales" },
 ]
 
 export function DashboardShell({ title, children }: { title: string; children: React.ReactNode }) {
   const pathname = usePathname()
+  const [role, setRole] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    async function loadRole() {
+      const token = typeof window !== "undefined" ? localStorage.getItem("bp_token") : null
+      if (!token) return setRole(null)
+      try {
+        const res = await fetch("http://localhost:8000/me", { headers: { Authorization: `Bearer ${token}` } })
+        if (!res.ok) return setRole(null)
+        const data = await res.json()
+        setRole(data.role)
+      } catch (err) {
+        setRole(null)
+      }
+    }
+    loadRole()
+  }, [])
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="flex">
@@ -22,8 +42,17 @@ export function DashboardShell({ title, children }: { title: string; children: R
           <div className="p-4">
             <div className="font-semibold text-lg">Beat Planning</div>
           </div>
+          {/* profile card */}
+          <div className="border-b">
+            {/* profile card to show avatar/info/logout */}
+            <ProfileCard />
+          </div>
           <nav className="flex flex-col gap-1 p-2">
             {nav.map((item) => {
+              // Hide manager nav item if user is not manager/admin
+              if (item.href === '/manager' && role !== 'manager' && role !== 'admin') return null
+              // Hide sales nav item if user is not sales/manager/admin
+              if (item.href === '/sales' && role !== 'sales' && role !== 'manager' && role !== 'admin') return null
               const active = pathname === item.href
               return (
                 <Link key={item.href} href={item.href} className="w-full">

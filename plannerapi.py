@@ -1,8 +1,10 @@
 
 
 
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException
 from salespersonapi import router as salesperson_router
+from authapi import router as auth_router
+from visitapi import router as visit_router
 from fastapi.responses import JSONResponse, PlainTextResponse
 from middleware import add_cors_middleware
 import pandas as pd
@@ -14,10 +16,60 @@ import os
 app = FastAPI()
 add_cors_middleware(app)
 app.include_router(salesperson_router)
+app.include_router(auth_router)
+app.include_router(visit_router)
+
+# Initialize DB on startup (if using Neon via DATABASE_URL)
+from db import DATABASE_URL, init_db as _init_db
+from db import get_conn
+from authapi import get_current_user
+
+
+@app.on_event("startup")
+def _startup_init_db():
+    try:
+        if DATABASE_URL:
+            _init_db()
+    except Exception:
+        # don't crash if DB not configured yet; errors will surface on use
+        pass
 
 @app.get("/")
 def root():
     return {"message": "Beat Planning API is running"}
+
+
+@app.get("/admin/metrics")
+def admin_metrics(user=Depends(get_current_user)):
+    """Return simple aggregated metrics for manager dashboard. Only accessible to users with role 'manager' or 'admin'."""
+    role = user.get("role")
+    if role not in ("manager", "admin"):
+        raise HTTPException(status_code=403, detail="Requires manager role")
+
+    conn = get_conn()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT COUNT(*) FROM events")
+        total_events = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM events WHERE timestamp::date = current_date")
+        events_today = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(DISTINCT sales_id) FROM events")
+        unique_sales = cur.fetchone()[0]
+
+        cur.execute("SELECT COUNT(*) FROM events WHERE timestamp >= now() - interval '7 days'")
+        events_last_7_days = cur.fetchone()[0]
+
+        return {
+            "total_events": total_events,
+            "events_today": events_today,
+            "unique_sales": unique_sales,
+            "events_last_7_days": events_last_7_days,
+        }
+    finally:
+        cur.close()
+        conn.close()
 
 # Endpoint: create_data_model
 @app.post("/create_data_model")
